@@ -1,86 +1,181 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const Post = require('./models/post.js');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap");
 
-const app = express();
-const port = 3000;
+html,
+body {
+  width: 100vw;
+  height: 100%;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  font-family: "Arial", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #898989; 
+  color: #fff; 
+  font-size: 18px;
 
-app.set('view engine', 'ejs');
+  background-color:#db952d;
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+    radial-gradient(at 50% 100%, hsla(225,39%,25%,1) 0, transparent 50%);
 
-// Middleware
-app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: true }));
+}
+.container h1{
+    color:cornsilk;
+}
+/* HEADER */
+nav {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 100vw;
+  
+}
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/blog', { useNewUrlParser: true, useUnifiedTopology: true });
+.logo-div {
+  padding-left: 1em;
+}
 
-// Variables
-const pages = [
-    {
-        name: 'Home',
-        url: '/',
-    }
-];
+.logo-div > p {
+  padding: 0;
+  margin: 0;
+  align-self: center;
+  padding: 1em 1em 1em 0em;
+  font-weight: bolder;
+}
 
-// GET REQUESTS
-app.get('/', async (request, response) => {
-    try {
-        const posts = await Post.find().select('displayId title content').exec();
-        response.render('index.ejs', { posts, url: request.url, pages });
-    } catch (error) {
-        console.error('Error fetching posts:', error);
-        response.status(500).send('Internal Server Error');
-    }
-});
+.nav-buttons {
+  display: flex;
+  gap: 1em;
+  padding: 1em;
+}
 
-app.get('/about', (request, response) => {
-    response.render('about.ejs', { url: request.url, pages });
-});
+.nav-buttons > p {
+  margin: 0;
+}
 
-// POST REQUESTS
-app.post('/submit-post', async (request, response) => {
-    try {
-        if (request.body['post-title']) {
-            const postCount = await Post.countDocuments();
-            const post = new Post({
-                title: request.body['post-title'],
-                content: request.body['post-content'],
-                displayId: postCount + 1, // Set displayId based on current count
-            });
+.nav-buttons > p > a {
+  text-decoration: none;
+  color: cyan;
+  transition: border 200ms;
+}
 
-            await post.save();
-        }
+.nav-buttons > p > a:hover {
+  border-bottom: 4px solid #ddd;
+}
 
-        response.redirect('/');
-    } catch (error) {
-        console.error('Error submitting post:', error);
-        response.status(500).send('Internal Server Error');
-    }
-});
+.active-nav-item {
+  border-bottom: 4px solid #ddd;
+}
 
-app.post('/delete-post', async (request, response) => {
-    try {
-        const postIdToDelete = request.body['post-to-delete'];
+/* INDEX */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  padding: 4em 0;
+}
 
-        if (postIdToDelete) {
-            // Find and delete the post by _id (assuming _id is the default ObjectId field in MongoDB)
-            const deletedPost = await Post.findByIdAndDelete(postIdToDelete).exec();
+.blog-post-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  width: 70vw;
+  max-width: 900px;
+  padding: 2em;
+  background-color: #262627; 
+  border: 1px solid gold;
+  border-radius: 10px;
+}
 
-            if (deletedPost) {
-                console.log(`Post with _id ${postIdToDelete} deleted successfully.`);
-            } else {
-                console.log(`Post with _id ${postIdToDelete} not found.`);
-            }
-        }
+.blog-post-form > section {
+  display: flex;
+  flex-direction: column;
+}
 
-        response.redirect('/');
-    } catch (error) {
-        console.error('Error deleting post:', error);
-        response.status(500).send('Internal Server Error');
-    }
-});
+.blog-post-form > section > textarea {
+  height: 7em;
+}
 
-app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
-});
+.blog-post-form > button {
+  padding: 10px;
+  color: #fff;
+  font-size: 15px;
+  background-color: #354553; 
+  border: none;
+  cursor: pointer;
+  transition: background-color 500ms;
+  border-radius: 5px;
+}
+
+.blog-post-form > button:hover {
+  background-color: #1d242b; 
+}
+
+.blog-post-form > section > input {
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.post-delete-form {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.post-delete-form > input {
+  width: 5em;
+}
+
+.post-delete-form > button {
+  border: none;
+  padding: 12px;
+  font-size: 15px;
+  color: #ddd;
+  background-color: #b02e0c; 
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 500ms;
+}
+
+.post-delete-form > button:hover {
+  background-color: #931f0b; 
+}
+
+.blog-posts-container {
+  margin-top: 4em;
+  width: 70vw;
+  max-width: 900px;
+  padding: 1em 2em;
+  background-color: #262627;
+  border: 1px solid gold;
+  border-radius: 10px;
+}
+
+.post-container {
+  background-color: #fff; /* Change post container background color */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow */
+}
+
+.post-container > section > p {
+  background-color: #f0f0f0; /* Change post content background color */
+  color: #333; /* Change post content text color */
+}
+
+
+.post-top > p {
+  color: cyan;
+  font-size: 10px;
+}
+
+.post-middle > p {
+  background-color: #123047;
+  color: #ffffff; /*rgb(27, 30, 70)ode post title text color */
+  font-weight: bolder;
+}
+
+.post-bottom > p {
+  color: cyan;
+}
